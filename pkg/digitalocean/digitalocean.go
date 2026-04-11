@@ -3,10 +3,11 @@ package digitalocean
 import (
 	"context"
 	"fmt"
-	"github.com/digitalocean/godo"
-	"github.com/skevetter/devpod/pkg/client"
-	"github.com/pkg/errors"
 	"time"
+
+	"github.com/digitalocean/godo"
+	"github.com/pkg/errors"
+	"github.com/skevetter/devpod/pkg/client"
 )
 
 func NewDigitalOcean(token string) *DigitalOcean {
@@ -28,7 +29,11 @@ func (d *DigitalOcean) Init(ctx context.Context) error {
 	return nil
 }
 
-func (d *DigitalOcean) Create(ctx context.Context, req *godo.DropletCreateRequest, diskSize int) error {
+func (d *DigitalOcean) Create(
+	ctx context.Context,
+	req *godo.DropletCreateRequest,
+	diskSize int,
+) error {
 	// create volume
 	volume, err := d.volumeByName(ctx, req.Name)
 	if err != nil {

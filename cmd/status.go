@@ -3,11 +3,12 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
 	"github.com/skevetter/log"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // StatusCmd holds the cmd flags

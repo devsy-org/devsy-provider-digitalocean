@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"context"
+	"time"
+
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
 	"github.com/skevetter/devpod/pkg/client"
 	"github.com/skevetter/log"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 // StopCmd holds the cmd flags

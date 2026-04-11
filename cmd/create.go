@@ -3,14 +3,15 @@ package cmd
 import (
 	"context"
 	"encoding/base64"
+	"strconv"
+
 	"github.com/digitalocean/godo"
+	"github.com/pkg/errors"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
-	"github.com/skevetter/log"
 	"github.com/skevetter/devpod/pkg/ssh"
-	"github.com/pkg/errors"
+	"github.com/skevetter/log"
 	"github.com/spf13/cobra"
-	"strconv"
 )
 
 // CreateCmd holds the cmd flags

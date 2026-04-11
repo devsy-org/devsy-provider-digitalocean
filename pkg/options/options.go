@@ -27,7 +27,7 @@ func FromEnv(skipMachine bool) (*Options, error) {
 		}
 		// prefix with devpod-
 		retOptions.MachineID = "devpod-" + retOptions.MachineID
-		
+
 		retOptions.MachineFolder, err = fromEnvOrError("MACHINE_FOLDER")
 		if err != nil {
 			return nil, err
@@ -61,7 +61,11 @@ func FromEnv(skipMachine bool) (*Options, error) {
 func fromEnvOrError(name string) (string, error) {
 	val := os.Getenv(name)
 	if val == "" {
-		return "", fmt.Errorf("couldn't find option %s in environment, please make sure %s is defined", name, name)
+		return "", fmt.Errorf(
+			"couldn't find option %s in environment, please make sure %s is defined",
+			name,
+			name,
+		)
 	}
 
 	return val, nil
