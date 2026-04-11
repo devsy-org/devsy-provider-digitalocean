@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
-	"github.com/pkg/errors"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
 	"github.com/skevetter/log"
@@ -42,7 +42,7 @@ func (cmd *StartCmd) Run(ctx context.Context, options *options.Options, log log.
 
 	diskSize, err := strconv.Atoi(options.DiskSize)
 	if err != nil {
-		return errors.Wrap(err, "parse disk size")
+		return fmt.Errorf("parse disk size: %w", err)
 	}
 
 	return digitalocean.NewDigitalOcean(options.Token).Create(ctx, req, diskSize)

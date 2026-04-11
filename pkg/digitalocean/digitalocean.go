@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/digitalocean/godo"
-	"github.com/pkg/errors"
 	"github.com/skevetter/devpod/pkg/client"
 )
 
@@ -23,7 +22,7 @@ type DigitalOcean struct {
 func (d *DigitalOcean) Init(ctx context.Context) error {
 	_, _, err := d.client.Droplets.List(ctx, &godo.ListOptions{})
 	if err != nil {
-		return errors.Wrap(err, "list droplets")
+		return fmt.Errorf("list droplets: %w", err)
 	}
 
 	return nil
@@ -48,7 +47,7 @@ func (d *DigitalOcean) Create(
 			Tags:            []string{"devpod"},
 		})
 		if err != nil {
-			return errors.Wrap(err, "create volume")
+			return fmt.Errorf("create volume: %w", err)
 		}
 	}
 
@@ -141,7 +140,7 @@ func (d *DigitalOcean) Delete(ctx context.Context, name string) error {
 		for _, dropletID := range volume.DropletIDs {
 			_, _, err = d.client.StorageActions.DetachByDropletID(ctx, volume.ID, dropletID)
 			if err != nil {
-				return errors.Wrap(err, "detach volume")
+				return fmt.Errorf("detach volume: %w", err)
 			}
 		}
 
@@ -162,7 +161,7 @@ func (d *DigitalOcean) Delete(ctx context.Context, name string) error {
 		if volume != nil {
 			_, err = d.client.Storage.DeleteVolume(ctx, volume.ID)
 			if err != nil {
-				return errors.Wrap(err, "delete volume")
+				return fmt.Errorf("delete volume: %w", err)
 			}
 		}
 	}

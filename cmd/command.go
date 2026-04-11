@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
 	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
 	"github.com/skevetter/devpod/pkg/ssh"
@@ -76,7 +75,7 @@ func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options, log lo
 	// dial external address
 	sshClient, err := ssh.NewSSHClient("devpod", externalIP+":22", privateKey)
 	if err != nil {
-		return errors.Wrap(err, "create ssh client")
+		return fmt.Errorf("create ssh client: %w", err)
 	}
 	defer sshClient.Close()
 
