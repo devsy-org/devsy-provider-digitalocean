@@ -4,8 +4,10 @@ go 1.25.7
 
 require (
 	github.com/digitalocean/godo v1.98.0
+	github.com/goccy/go-yaml v1.19.2
 	github.com/pkg/errors v0.9.1
 	github.com/skevetter/devpod v0.19.4
+	github.com/skevetter/log v0.0.0-20260106023547-bfd26ab1367c
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/crypto v0.49.0
 )
@@ -91,7 +93,6 @@ require (
 	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.17.0 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
-	github.com/skevetter/log v0.0.0-20260106023547-bfd26ab1367c // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/stoewer/go-strcase v1.3.1 // indirect
 	github.com/tailscale/hujson v0.0.0-20260302212456-ecc657c15afd // indirect

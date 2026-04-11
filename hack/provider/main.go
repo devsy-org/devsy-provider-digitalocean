@@ -3,47 +3,348 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"maps"
+	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
+
+	"github.com/goccy/go-yaml"
 )
 
-var placeholderMap = map[string]string{
-	"devpod-provider-digitalocean-linux-amd64":       "##CHECKSUM_LINUX_AMD64##",
-	"devpod-provider-digitalocean-linux-arm64":       "##CHECKSUM_LINUX_ARM64##",
-	"devpod-provider-digitalocean-darwin-amd64":      "##CHECKSUM_DARWIN_AMD64##",
-	"devpod-provider-digitalocean-darwin-arm64":      "##CHECKSUM_DARWIN_ARM64##",
-	"devpod-provider-digitalocean-windows-amd64.exe": "##CHECKSUM_WINDOWS_AMD64##",
+const (
+	providerName = "digitalocean"
+	githubOwner  = "skevetter"
+	githubRepo   = "devpod-provider-digitalocean"
+)
+
+type Provider struct {
+	Name         string            `yaml:"name"`
+	Version      string            `yaml:"version"`
+	Description  string            `yaml:"description"`
+	Icon         string            `yaml:"icon"`
+	OptionGroups []OptionGroup     `yaml:"optionGroups"`
+	Options      Options           `yaml:"options"`
+	Agent        Agent             `yaml:"agent"`
+	Binaries     Binaries          `yaml:"binaries"`
+	Exec         map[string]string `yaml:"exec"`
+}
+
+type OptionGroup struct {
+	Name    string   `yaml:"name"`
+	Options []string `yaml:"options"`
+}
+
+type Options map[string]Option
+
+type Option struct {
+	Description string   `yaml:"description,omitempty"`
+	Required    bool     `yaml:"required,omitempty"`
+	Default     string   `yaml:"default,omitempty"`
+	Command     string   `yaml:"command,omitempty"`
+	Password    bool     `yaml:"password,omitempty"`
+	Suggestions []string `yaml:"suggestions,omitempty"`
+}
+
+type Agent struct {
+	Path                    string         `yaml:"path"`
+	DataPath                string         `yaml:"dataPath"`
+	InactivityTimeout       string         `yaml:"inactivityTimeout"`
+	InjectGitCredentials    string         `yaml:"injectGitCredentials"`
+	InjectDockerCredentials string         `yaml:"injectDockerCredentials"`
+	Binaries                map[string]any `yaml:"binaries"`
+	Exec                    map[string]any `yaml:"exec"`
+}
+
+type Binaries struct {
+	DOProvider []Binary `yaml:"DO_PROVIDER"`
+}
+
+type Binary struct {
+	OS       string `yaml:"os"`
+	Arch     string `yaml:"arch"`
+	Path     string `yaml:"path"`
+	Checksum string `yaml:"checksum"`
+}
+
+type buildConfig struct {
+	version     string
+	projectRoot string
+	isRelease   bool
+	checksums   map[string]string
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "Usage: main.go <version>")
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
+}
 
+func run() error {
+	if len(os.Args) != 2 {
+		return fmt.Errorf("expected version as argument")
+	}
+
+	cfg, err := newBuildConfig(os.Args[1])
+	if err != nil {
+		return err
+	}
+
+	provider := buildProvider(cfg)
+
+	output, err := yaml.Marshal(provider)
+	if err != nil {
+		return fmt.Errorf("marshal yaml: %w", err)
+	}
+
+	_, err = os.Stdout.Write(output)
+	return err
+}
+
+func newBuildConfig(version string) (*buildConfig, error) {
 	checksums, err := parseChecksums("./dist/checksums.txt")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading checksums: %v\n", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("parse checksums: %w", err)
 	}
 
-	content, err := os.ReadFile("./hack/provider/provider.yaml")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading provider.yaml: %v\n", err)
-		os.Exit(1)
+	projectRoot := os.Getenv("PROJECT_ROOT")
+	if projectRoot == "" {
+		owner := getEnvOrDefault("GITHUB_OWNER", githubOwner)
+		projectRoot = fmt.Sprintf(
+			"https://github.com/%s/%s/releases/download/%s",
+			owner,
+			githubRepo,
+			version,
+		)
 	}
 
-	replaced := strings.ReplaceAll(string(content), "##VERSION##", os.Args[1])
-	for filename, placeholder := range placeholderMap {
-		checksum, ok := checksums[filename]
-		if !ok {
-			fmt.Fprintf(os.Stderr, "Warning: no checksum found for %s\n", filename)
-			continue
+	isRelease := strings.Contains(projectRoot, "github.com") &&
+		strings.Contains(projectRoot, "/releases/")
+
+	return &buildConfig{
+		version:     version,
+		projectRoot: projectRoot,
+		isRelease:   isRelease,
+		checksums:   checksums,
+	}, nil
+}
+
+func buildProvider(cfg *buildConfig) Provider {
+	return Provider{
+		Name:         providerName,
+		Version:      cfg.version,
+		Description:  "DevPod on DigitalOcean",
+		Icon:         "https://devpod.sh/assets/digitalocean.svg",
+		OptionGroups: buildOptionGroups(),
+		Options:      buildOptions(),
+		Agent:        buildAgent(cfg),
+		Binaries:     buildBinaries(cfg, allPlatforms()),
+		Exec: map[string]string{
+			"init":    "${DO_PROVIDER} init",
+			"command": "${DO_PROVIDER} command",
+			"create":  "${DO_PROVIDER} create",
+			"delete":  "${DO_PROVIDER} delete",
+			"start":   "${DO_PROVIDER} start",
+			"stop":    "${DO_PROVIDER} stop",
+			"status":  "${DO_PROVIDER} status",
+		},
+	}
+}
+
+func buildOptionGroups() []OptionGroup {
+	return []OptionGroup{
+		{
+			Name: "Digital Ocean options",
+			Options: []string{
+				"DISK_SIZE",
+				"DISK_IMAGE",
+				"MACHINE_TYPE",
+			},
+		},
+		{
+			Name: "Agent options",
+			Options: []string{
+				"AGENT_PATH",
+				"AGENT_DATA_PATH",
+				"INACTIVITY_TIMEOUT",
+				"INJECT_DOCKER_CREDENTIALS",
+				"INJECT_GIT_CREDENTIALS",
+			},
+		},
+	}
+}
+
+//nolint:gosec // G101: template variables, not actual credentials
+func buildOptions() Options {
+	opts := Options{}
+	maps.Copy(opts, buildCoreOptions())
+	maps.Copy(opts, buildInstanceOptions())
+	maps.Copy(opts, buildAgentOptions())
+	return opts
+}
+
+func buildCoreOptions() Options {
+	return Options{
+		"TOKEN": {
+			Description: "The DigitalOcean token to use.",
+			Required:    true,
+			Password:    true,
+			Command: `if [ ! -z "${DIGITALOCEAN_TOKEN}" ]; then
+  echo ${DIGITALOCEAN_TOKEN}
+elif [ ! -z "${DIGITALOCEAN_ACCESS_TOKEN}" ]; then
+  echo ${DIGITALOCEAN_ACCESS_TOKEN}
+fi`,
+		},
+		"REGION": {
+			Description: "The digital ocean region to use. E.g. fra1",
+			Required:    true,
+			Default:     "fra1",
+			Suggestions: []string{
+				"ams2", "ams3", "blr1", "fra1", "lon1",
+				"nyc1", "nyc2", "ncy3",
+				"sfo1", "sfo2", "sfo3",
+				"atl1", "sgp1", "tor1", "syd1",
+			},
+		},
+	}
+}
+
+func buildInstanceOptions() Options {
+	return Options{
+		"DISK_SIZE": {
+			Description: "The disk size in GB.",
+			Default:     "30",
+		},
+		"DISK_IMAGE": {
+			Description: "The disk image to use.",
+			Default:     "docker-20-04",
+			Suggestions: []string{
+				"docker-20-04",
+				"almalinux-8-x64", "almalinux-9-x64",
+				"centos-7-x64", "centos-stream-9-x64", "centos-stream-8-x64",
+				"debian-10-x64", "debian-12-x64", "debian-11-x64",
+				"fedora-37-x64", "fedora-38-x64",
+				"rockylinux-8-x64", "rockylinux-9-x64",
+				"ubuntu-20-04-x64", "ubuntu-22-04-x64", "ubuntu-23-04-x64",
+			},
+		},
+		"MACHINE_TYPE": {
+			Description: "The machine type to use.",
+			Default:     "s-4vcpu-8gb",
+			Suggestions: []string{
+				"s-1vcpu-2gb", "s-2vcpu-4gb", "s-4vcpu-8gb", "s-8vcpu-16gb",
+				"c-2", "c-4", "c-8", "c-16", "c-32",
+			},
+		},
+	}
+}
+
+func buildAgentOptions() Options {
+	return Options{
+		"INACTIVITY_TIMEOUT": {
+			Description: "If defined, will automatically stop the VM after the inactivity period.",
+			Default:     "10m",
+		},
+		"INJECT_GIT_CREDENTIALS": {
+			Description: "If DevPod should inject git credentials into the remote host.",
+			Default:     "true",
+		},
+		"INJECT_DOCKER_CREDENTIALS": {
+			Description: "If DevPod should inject docker credentials into the remote host.",
+			Default:     "true",
+		},
+		"AGENT_PATH": {
+			Description: "The path where to inject the DevPod agent to.",
+			Default:     "/home/devpod/.devpod/devpod",
+		},
+		"AGENT_DATA_PATH": {
+			Description: "The path where to store the agent data.",
+			Default:     "/home/devpod/.devpod/agent",
+		},
+	}
+}
+
+//nolint:gosec // G101: template variables, not actual credentials
+func buildAgent(cfg *buildConfig) Agent {
+	return Agent{
+		Path:                    "${AGENT_PATH}",
+		DataPath:                "${AGENT_DATA_PATH}",
+		InactivityTimeout:       "${INACTIVITY_TIMEOUT}",
+		InjectGitCredentials:    "${INJECT_GIT_CREDENTIALS}",
+		InjectDockerCredentials: "${INJECT_DOCKER_CREDENTIALS}",
+		Binaries: map[string]any{
+			"DO_PROVIDER": buildBinaries(cfg, linuxPlatforms()).DOProvider,
+		},
+		Exec: map[string]any{
+			"shutdown": "${DO_PROVIDER} stop",
+		},
+	}
+}
+
+func buildBinaries(cfg *buildConfig, platforms []string) Binaries {
+	return Binaries{DOProvider: buildBinaryList(cfg, platforms)}
+}
+
+func buildBinaryList(cfg *buildConfig, platforms []string) []Binary {
+	result := make([]Binary, 0, len(platforms))
+	for _, platform := range platforms {
+		result = append(result, buildBinary(cfg, platform))
+	}
+	return result
+}
+
+func buildBinary(cfg *buildConfig, platform string) Binary {
+	os, arch, _ := strings.Cut(platform, "/")
+
+	path := cfg.projectRoot
+	if !cfg.isRelease {
+		if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+			base, _ := url.Parse(path)
+			joined, _ := url.JoinPath(base.String(), buildDir(platform))
+			path = joined
+		} else {
+			absPath, _ := filepath.Abs(path)
+			path = filepath.Join(absPath, buildDir(platform))
 		}
-		replaced = strings.ReplaceAll(replaced, placeholder, checksum)
 	}
 
-	fmt.Print(replaced)
+	filename := fmt.Sprintf("devpod-provider-%s-%s-%s", providerName, os, arch)
+	if os == "windows" {
+		filename += ".exe"
+	}
+
+	if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+		path, _ = url.JoinPath(path, filename)
+	} else {
+		path = filepath.Join(path, filename)
+	}
+
+	return Binary{
+		OS:       os,
+		Arch:     arch,
+		Path:     path,
+		Checksum: cfg.checksums[filename],
+	}
+}
+
+func buildDir(platform string) string {
+	dirs := map[string]string{
+		"linux/amd64":   "build_linux_amd64_v1",
+		"linux/arm64":   "build_linux_arm64_v8.0",
+		"darwin/amd64":  "build_darwin_amd64_v1",
+		"darwin/arm64":  "build_darwin_arm64_v8.0",
+		"windows/amd64": "build_windows_amd64_v1",
+	}
+	return dirs[platform]
+}
+
+func allPlatforms() []string {
+	return []string{"linux/amd64", "linux/arm64", "darwin/amd64", "darwin/arm64", "windows/amd64"}
+}
+
+func linuxPlatforms() []string {
+	return []string{"linux/amd64", "linux/arm64"}
 }
 
 func parseChecksums(path string) (map[string]string, error) {
@@ -62,4 +363,11 @@ func parseChecksums(path string) (map[string]string, error) {
 	}
 
 	return checksums, scanner.Err()
+}
+
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
