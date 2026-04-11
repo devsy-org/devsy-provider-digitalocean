@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"context"
-	"github.com/loft-sh/devpod-provider-digitalocean/pkg/digitalocean"
-	"github.com/loft-sh/devpod-provider-digitalocean/pkg/options"
-	"github.com/loft-sh/devpod/pkg/log"
+	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
+	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
+	"github.com/skevetter/log"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strconv"

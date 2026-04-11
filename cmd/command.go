@@ -3,12 +3,12 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/loft-sh/devpod-provider-digitalocean/pkg/digitalocean"
+	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
 	"os"
 
-	"github.com/loft-sh/devpod-provider-digitalocean/pkg/options"
-	"github.com/loft-sh/devpod/pkg/log"
-	"github.com/loft-sh/devpod/pkg/ssh"
+	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
+	"github.com/skevetter/log"
+	"github.com/skevetter/devpod/pkg/ssh"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -81,5 +81,11 @@ func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options, log lo
 	defer sshClient.Close()
 
 	// run command
-	return ssh.Run(context.Background(), sshClient, command, os.Stdin, os.Stdout, os.Stderr)
+	return ssh.Run(context.Background(), ssh.RunOptions{
+		Client:  sshClient,
+		Command: command,
+		Stdin:   os.Stdin,
+		Stdout:  os.Stdout,
+		Stderr:  os.Stderr,
+	})
 }

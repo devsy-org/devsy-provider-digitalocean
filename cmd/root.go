@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/exec"
 
-	log2 "github.com/loft-sh/devpod/pkg/log"
+	"github.com/skevetter/log"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"
 )
@@ -18,7 +18,7 @@ func NewRootCmd() *cobra.Command {
 		SilenceUsage:  true,
 
 		PersistentPreRunE: func(cobraCmd *cobra.Command, args []string) error {
-			log2.Default.MakeRaw()
+			log.Default.MakeRaw()
 			return nil
 		},
 	}
@@ -40,12 +40,12 @@ func Execute() {
 		}
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			if len(exitErr.Stderr) > 0 {
-				log2.Default.ErrorStreamOnly().Error(string(exitErr.Stderr))
+				log.Default.ErrorStreamOnly().Error(string(exitErr.Stderr))
 			}
 			os.Exit(exitErr.ExitCode())
 		}
 
-		log2.Default.Fatal(err)
+		log.Default.Fatal(err)
 	}
 }
 

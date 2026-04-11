@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/digitalocean/godo"
-	"github.com/loft-sh/devpod/pkg/client"
+	"github.com/skevetter/devpod/pkg/client"
 	"github.com/pkg/errors"
 	"time"
 )
