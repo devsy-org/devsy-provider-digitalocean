@@ -1,60 +1,65 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 )
 
-var checksumMap = map[string]string{
-	"./release/devpod-provider-digitalocean-linux-amd64":       "##CHECKSUM_LINUX_AMD64##",
-	"./release/devpod-provider-digitalocean-linux-arm64":       "##CHECKSUM_LINUX_ARM64##",
-	"./release/devpod-provider-digitalocean-darwin-amd64":      "##CHECKSUM_DARWIN_AMD64##",
-	"./release/devpod-provider-digitalocean-darwin-arm64":      "##CHECKSUM_DARWIN_ARM64##",
-	"./release/devpod-provider-digitalocean-windows-amd64.exe": "##CHECKSUM_WINDOWS_AMD64##",
+var placeholderMap = map[string]string{
+	"devpod-provider-digitalocean-linux-amd64":       "##CHECKSUM_LINUX_AMD64##",
+	"devpod-provider-digitalocean-linux-arm64":       "##CHECKSUM_LINUX_ARM64##",
+	"devpod-provider-digitalocean-darwin-amd64":      "##CHECKSUM_DARWIN_AMD64##",
+	"devpod-provider-digitalocean-darwin-arm64":      "##CHECKSUM_DARWIN_ARM64##",
+	"devpod-provider-digitalocean-windows-amd64.exe": "##CHECKSUM_WINDOWS_AMD64##",
 }
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "Expected version as argument")
+		fmt.Fprintln(os.Stderr, "Usage: main.go <version>")
 		os.Exit(1)
-		return
+	}
+
+	checksums, err := parseChecksums("./dist/checksums.txt")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading checksums: %v\n", err)
+		os.Exit(1)
 	}
 
 	content, err := os.ReadFile("./hack/provider/provider.yaml")
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error reading provider.yaml: %v\n", err)
+		os.Exit(1)
 	}
 
-	replaced := strings.Replace(string(content), "##VERSION##", os.Args[1], -1)
-	for k, v := range checksumMap {
-		checksum, err := File(k)
-		if err != nil {
-			panic(fmt.Errorf("generate checksum for %s: %v", k, err))
+	replaced := strings.ReplaceAll(string(content), "##VERSION##", os.Args[1])
+	for filename, placeholder := range placeholderMap {
+		checksum, ok := checksums[filename]
+		if !ok {
+			fmt.Fprintf(os.Stderr, "Warning: no checksum found for %s\n", filename)
+			continue
 		}
-
-		replaced = strings.Replace(replaced, v, checksum, -1)
+		replaced = strings.ReplaceAll(replaced, placeholder, checksum)
 	}
 
 	fmt.Print(replaced)
 }
 
-// File hashes a given file to a sha256 string
-func File(filePath string) (string, error) {
-	file, err := os.Open(filePath)
+func parseChecksums(path string) (map[string]string, error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
-	hash := sha256.New()
-	_, err = io.Copy(hash, file)
-	if err != nil {
-		return "", err
+	checksums := make(map[string]string)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		if checksum, filename, ok := strings.Cut(scanner.Text(), "  "); ok {
+			checksums[strings.TrimSpace(filename)] = checksum
+		}
 	}
 
-	return strings.ToLower(hex.EncodeToString(hash.Sum(nil))), nil
+	return checksums, scanner.Err()
 }
