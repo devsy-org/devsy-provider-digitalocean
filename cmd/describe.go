@@ -11,10 +11,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DescribeCmd holds the cmd flags
+// DescribeCmd holds the cmd flags.
 type DescribeCmd struct{}
 
-// NewDescribeCmd defines a command
+// NewDescribeCmd defines a command.
 func NewDescribeCmd() *cobra.Command {
 	cmd := &DescribeCmd{}
 	return &cobra.Command{
@@ -31,7 +31,7 @@ func NewDescribeCmd() *cobra.Command {
 	}
 }
 
-// Run runs the command logic
+// Run runs the command logic.
 func (cmd *DescribeCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
 	description, err := digitalocean.NewDigitalOcean(options.Token).Describe(ctx, options.MachineID)
 	if err != nil {
