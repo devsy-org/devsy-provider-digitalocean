@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/digitalocean/godo"
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
 	"github.com/devsy-org/devsy/pkg/ssh"
 	"github.com/devsy-org/log"
+	"github.com/digitalocean/godo"
 	"github.com/spf13/cobra"
 )
 
