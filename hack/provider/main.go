@@ -14,8 +14,8 @@ import (
 
 const (
 	providerName = "digitalocean"
-	githubOwner  = "skevetter"
-	githubRepo   = "devpod-provider-digitalocean"
+	githubOwner  = "devsy-org"
+	githubRepo   = "devsy-provider-digitalocean"
 )
 
 type Provider struct {
@@ -23,6 +23,7 @@ type Provider struct {
 	Version      string            `yaml:"version"`
 	Description  string            `yaml:"description"`
 	Icon         string            `yaml:"icon"`
+	IconDark     string            `yaml:"iconDark"`
 	OptionGroups []OptionGroup     `yaml:"optionGroups"`
 	Options      Options           `yaml:"options"`
 	Agent        Agent             `yaml:"agent"`
@@ -31,8 +32,9 @@ type Provider struct {
 }
 
 type OptionGroup struct {
-	Name    string   `yaml:"name"`
-	Options []string `yaml:"options"`
+	Name           string   `yaml:"name"`
+	DefaultVisible bool     `yaml:"defaultVisible"`
+	Options        []string `yaml:"options"`
 }
 
 type Options map[string]Option
@@ -41,6 +43,7 @@ type Option struct {
 	Description string   `yaml:"description,omitempty"`
 	Required    bool     `yaml:"required,omitempty"`
 	Default     string   `yaml:"default,omitempty"`
+	Type        string   `yaml:"type,omitempty"`
 	Command     string   `yaml:"command,omitempty"`
 	Password    bool     `yaml:"password,omitempty"`
 	Suggestions []string `yaml:"suggestions,omitempty"`
@@ -136,18 +139,20 @@ func buildProvider(cfg *buildConfig) Provider {
 		Version:      cfg.version,
 		Description:  "DevPod on DigitalOcean",
 		Icon:         "https://devpod.sh/assets/digitalocean.svg",
+		IconDark:     "https://devpod.sh/assets/digitalocean_dark.svg",
 		OptionGroups: buildOptionGroups(),
 		Options:      buildOptions(),
 		Agent:        buildAgent(cfg),
 		Binaries:     buildBinaries(cfg, allPlatforms()),
 		Exec: map[string]string{
-			"init":    "${DO_PROVIDER} init",
-			"command": "${DO_PROVIDER} command",
-			"create":  "${DO_PROVIDER} create",
-			"delete":  "${DO_PROVIDER} delete",
-			"start":   "${DO_PROVIDER} start",
-			"stop":    "${DO_PROVIDER} stop",
-			"status":  "${DO_PROVIDER} status",
+			"init":     "${DO_PROVIDER} init",
+			"command":  "${DO_PROVIDER} command",
+			"create":   "${DO_PROVIDER} create",
+			"delete":   "${DO_PROVIDER} delete",
+			"start":    "${DO_PROVIDER} start",
+			"stop":     "${DO_PROVIDER} stop",
+			"status":   "${DO_PROVIDER} status",
+			"describe": "${DO_PROVIDER} describe",
 		},
 	}
 }
@@ -155,7 +160,8 @@ func buildProvider(cfg *buildConfig) Provider {
 func buildOptionGroups() []OptionGroup {
 	return []OptionGroup{
 		{
-			Name: "Digital Ocean options",
+			Name:           "Digital Ocean options",
+			DefaultVisible: true,
 			Options: []string{
 				"DISK_SIZE",
 				"DISK_IMAGE",
@@ -163,7 +169,8 @@ func buildOptionGroups() []OptionGroup {
 			},
 		},
 		{
-			Name: "Agent options",
+			Name:           "Agent options",
+			DefaultVisible: false,
 			Options: []string{
 				"AGENT_PATH",
 				"AGENT_DATA_PATH",

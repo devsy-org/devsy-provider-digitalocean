@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/skevetter/log"
+	"github.com/devsy-org/log"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"
 )
@@ -12,7 +12,7 @@ import (
 // NewRootCmd returns a new root command
 func NewRootCmd() *cobra.Command {
 	doCmd := &cobra.Command{
-		Use:           "devpod-provider-digitalocean",
+		Use:           "devsy-provider-digitalocean",
 		Short:         "digitalocean provider commands",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -60,5 +60,6 @@ func BuildRoot() *cobra.Command {
 	rootCmd.AddCommand(NewStopCmd())
 	rootCmd.AddCommand(NewCommandCmd())
 	rootCmd.AddCommand(NewInitCmd())
+	rootCmd.AddCommand(NewDescribeCmd())
 	return rootCmd
 }
