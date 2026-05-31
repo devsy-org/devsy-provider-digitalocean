@@ -2,11 +2,12 @@ package digitalocean
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
+	"github.com/devsy-org/devsy/pkg/client"
 	"github.com/digitalocean/godo"
-	"github.com/skevetter/devpod/pkg/client"
 )
 
 func NewDigitalOcean(token string) *DigitalOcean {
@@ -115,6 +116,22 @@ func (d *DigitalOcean) Status(ctx context.Context, name string) (client.Status, 
 	}
 
 	return client.StatusRunning, nil
+}
+
+func (d *DigitalOcean) Describe(ctx context.Context, name string) (string, error) {
+	droplet, err := d.GetByName(ctx, name)
+	if err != nil {
+		return "", fmt.Errorf("describe droplet: %w", err)
+	} else if droplet == nil {
+		return client.DescriptionNotFound, nil
+	}
+
+	out, err := json.MarshalIndent(droplet, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("marshal droplet description: %w", err)
+	}
+
+	return string(out), nil
 }
 
 func (d *DigitalOcean) GetByName(ctx context.Context, name string) (*godo.Droplet, error) {

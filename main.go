@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/skevetter/devpod-provider-digitalocean/cmd"
+	"github.com/devsy-org/devsy-provider-digitalocean/cmd"
 )
 
 func main() {

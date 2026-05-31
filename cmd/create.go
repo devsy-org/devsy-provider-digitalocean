@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/digitalocean/godo"
-	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
-	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
-	"github.com/skevetter/devpod/pkg/ssh"
-	"github.com/skevetter/log"
+	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
+	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
+	"github.com/devsy-org/devsy/pkg/ssh"
+	"github.com/devsy-org/log"
 	"github.com/spf13/cobra"
 )
 

@@ -11,15 +11,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// StatusCmd holds the cmd flags
-type StatusCmd struct{}
+// DescribeCmd holds the cmd flags
+type DescribeCmd struct{}
 
-// NewStatusCmd defines a command
-func NewStatusCmd() *cobra.Command {
-	cmd := &StatusCmd{}
-	statusCmd := &cobra.Command{
-		Use:   "status",
-		Short: "Retrieve the status of an instance",
+// NewDescribeCmd defines a command
+func NewDescribeCmd() *cobra.Command {
+	cmd := &DescribeCmd{}
+	return &cobra.Command{
+		Use:   "describe",
+		Short: "Retrieve description of the virtual machine",
 		RunE: func(_ *cobra.Command, args []string) error {
 			options, err := options.FromEnv(false)
 			if err != nil {
@@ -29,17 +29,15 @@ func NewStatusCmd() *cobra.Command {
 			return cmd.Run(context.Background(), options, log.Default)
 		},
 	}
-
-	return statusCmd
 }
 
 // Run runs the command logic
-func (cmd *StatusCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
-	status, err := digitalocean.NewDigitalOcean(options.Token).Status(ctx, options.MachineID)
+func (cmd *DescribeCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
+	description, err := digitalocean.NewDigitalOcean(options.Token).Describe(ctx, options.MachineID)
 	if err != nil {
 		return err
 	}
 
-	_, err = fmt.Fprint(os.Stdout, status)
+	_, err = fmt.Fprint(os.Stdout, description)
 	return err
 }

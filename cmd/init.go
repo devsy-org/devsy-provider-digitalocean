@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 
-	"github.com/skevetter/devpod-provider-digitalocean/pkg/digitalocean"
-	"github.com/skevetter/devpod-provider-digitalocean/pkg/options"
-	"github.com/skevetter/log"
+	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
+	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
+	"github.com/devsy-org/log"
 	"github.com/spf13/cobra"
 )
 
