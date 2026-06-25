@@ -8,7 +8,7 @@ import (
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
 	"github.com/devsy-org/devsy/pkg/ssh"
-	"github.com/devsy-org/log"
+	"github.com/digitalocean/godo"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +27,7 @@ func NewCommandCmd() *cobra.Command {
 				return err
 			}
 
-			return cmd.Run(context.Background(), options, log.Default)
+			return cmd.Run(context.Background(), options)
 		},
 	}
 
@@ -35,7 +35,7 @@ func NewCommandCmd() *cobra.Command {
 }
 
 // Run runs the command logic
-func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
+func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options) error {
 	command := os.Getenv("COMMAND")
 	if command == "" {
 		return fmt.Errorf("command environment variable is missing")
@@ -56,20 +56,9 @@ func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options, log lo
 	}
 
 	// get external ip
-	if droplet.Networks == nil {
-		return fmt.Errorf("couldn't find public ip address")
-	}
-
-	// loop over addresses
-	externalIP := ""
-	for _, network := range droplet.Networks.V4 {
-		if network.Type == "public" && network.IPAddress != "" {
-			externalIP = network.IPAddress
-			break
-		}
-	}
-	if externalIP == "" {
-		return fmt.Errorf("couldn't find a public ip address")
+	externalIP, err := publicIPv4(droplet)
+	if err != nil {
+		return err
 	}
 
 	// dial external address
@@ -87,4 +76,19 @@ func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options, log lo
 		Stdout:  os.Stdout,
 		Stderr:  os.Stderr,
 	})
+}
+
+// publicIPv4 returns the first public IPv4 address of the droplet.
+func publicIPv4(droplet *godo.Droplet) (string, error) {
+	if droplet.Networks == nil {
+		return "", fmt.Errorf("couldn't find public ip address")
+	}
+
+	for _, network := range droplet.Networks.V4 {
+		if network.Type == "public" && network.IPAddress != "" {
+			return network.IPAddress, nil
+		}
+	}
+
+	return "", fmt.Errorf("couldn't find a public ip address")
 }
