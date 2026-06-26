@@ -1,14 +1,12 @@
-# DigitalOcean Provider for DevPod
-
-[![Join us on Slack!](https://devpod.sh/assets/slack.svg)](https://slack.loft.sh/) [![Open in DevPod!](https://devpod.sh/assets/open-in-devpod.svg)](https://devpod.sh/open#https://github.com/devsy-org/devsy-provider-digitalocean)
+# DigitalOcean Provider for Devsy
 
 ## Getting started
 
 The provider is available for auto-installation using
 
 ```sh
-devpod provider add digitalocean
-devpod provider use digitalocean
+devsy provider add digitalocean
+devsy provider use digitalocean
 ```
 
 Follow the on-screen instructions to complete the setup.
@@ -20,12 +18,12 @@ Needed variables will be:
 The provider will inherit `DIGITALOCEAN_TOKEN` or `DIGITALOCEAN_ACCESS_TOKEN`
 from the environment, or you can supply `TOKEN` directly via provider options.
 
-### Creating your first devpod env with digitalocean
+### Creating your first devsy env with digitalocean
 
 After the initial setup, just use:
 
 ```sh
-devpod up .
+devsy up .
 ```
 
 You'll need to wait for the machine and environment setup.
@@ -45,7 +43,7 @@ This provider has the following options
 Options can either be set in `env` or on the command line, for example:
 
 ```sh
-devpod provider set-options -o MACHINE_TYPE=s-8vcpu-16gb
+devsy provider set-options -o MACHINE_TYPE=s-8vcpu-16gb
 ```
 
 ## Local Development
