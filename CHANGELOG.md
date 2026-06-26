@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.0.0...v1.1.0) (2026-06-26)
+
+
+### Miscellaneous Chores
+
+* release 1.1.0 ([#15](https://github.com/devsy-org/devsy-provider-digitalocean/issues/15)) ([757cafc](https://github.com/devsy-org/devsy-provider-digitalocean/commit/757cafcb951661e1aacff16ebcfe190e56b436c2))
+
 ## 1.0.0 (2026-05-31)
 
 
