@@ -9,7 +9,6 @@ import (
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
 	"github.com/devsy-org/devsy/pkg/ssh"
-	"github.com/devsy-org/log"
 	"github.com/digitalocean/godo"
 	"github.com/spf13/cobra"
 )
@@ -29,7 +28,7 @@ func NewCreateCmd() *cobra.Command {
 				return err
 			}
 
-			return cmd.Run(context.Background(), options, log.Default)
+			return cmd.Run(context.Background(), options)
 		},
 	}
 
@@ -37,7 +36,7 @@ func NewCreateCmd() *cobra.Command {
 }
 
 // Run runs the command logic
-func (cmd *CreateCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
+func (cmd *CreateCmd) Run(ctx context.Context, options *options.Options) error {
 	req, err := buildInstance(options)
 	if err != nil {
 		return err

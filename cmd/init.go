@@ -5,7 +5,6 @@ import (
 
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
-	"github.com/devsy-org/log"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +23,7 @@ func NewInitCmd() *cobra.Command {
 				return err
 			}
 
-			return cmd.Run(context.Background(), options, log.Default)
+			return cmd.Run(context.Background(), options)
 		},
 	}
 
@@ -32,6 +31,6 @@ func NewInitCmd() *cobra.Command {
 }
 
 // Run runs the command logic
-func (cmd *InitCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
+func (cmd *InitCmd) Run(ctx context.Context, options *options.Options) error {
 	return digitalocean.NewDigitalOcean(options.Token).Init(ctx)
 }

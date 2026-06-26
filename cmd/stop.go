@@ -7,7 +7,7 @@ import (
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/digitalocean"
 	"github.com/devsy-org/devsy-provider-digitalocean/pkg/options"
 	"github.com/devsy-org/devsy/pkg/client"
-	"github.com/devsy-org/log"
+	"github.com/devsy-org/devsy/pkg/log"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ func NewStopCmd() *cobra.Command {
 				return err
 			}
 
-			return cmd.Run(context.Background(), options, log.Default)
+			return cmd.Run(context.Background(), options)
 		},
 	}
 
@@ -34,7 +34,7 @@ func NewStopCmd() *cobra.Command {
 }
 
 // Run runs the command logic
-func (cmd *StopCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
+func (cmd *StopCmd) Run(ctx context.Context, options *options.Options) error {
 	digitalOceanClient := digitalocean.NewDigitalOcean(options.Token)
 	err := digitalOceanClient.Stop(ctx, options.MachineID)
 	if err != nil {
