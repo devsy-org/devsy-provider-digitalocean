@@ -137,9 +137,9 @@ func buildProvider(cfg *buildConfig) Provider {
 	return Provider{
 		Name:         providerName,
 		Version:      cfg.version,
-		Description:  "DevPod on DigitalOcean",
-		Icon:         "https://devpod.sh/assets/digitalocean.svg",
-		IconDark:     "https://devpod.sh/assets/digitalocean_dark.svg",
+		Description:  "Devsy on DigitalOcean",
+		Icon:         "https://devsy.sh/assets/digitalocean.svg",
+		IconDark:     "https://devsy.sh/assets/digitalocean_dark.svg",
 		OptionGroups: buildOptionGroups(),
 		Options:      buildOptions(),
 		Agent:        buildAgent(cfg),
@@ -254,20 +254,20 @@ func buildAgentOptions() Options {
 			Default:     "10m",
 		},
 		"INJECT_GIT_CREDENTIALS": {
-			Description: "If DevPod should inject git credentials into the remote host.",
+			Description: "If Devsy should inject git credentials into the remote host.",
 			Default:     "true",
 		},
 		"INJECT_DOCKER_CREDENTIALS": {
-			Description: "If DevPod should inject docker credentials into the remote host.",
+			Description: "If Devsy should inject docker credentials into the remote host.",
 			Default:     "true",
 		},
 		"AGENT_PATH": {
-			Description: "The path where to inject the DevPod agent to.",
-			Default:     "/home/devpod/.devpod/devpod",
+			Description: "The path where to inject the Devsy agent to.",
+			Default:     "/home/devsy/.devsy/devsy",
 		},
 		"AGENT_DATA_PATH": {
 			Description: "The path where to store the agent data.",
-			Default:     "/home/devpod/.devpod/agent",
+			Default:     "/home/devsy/.devsy/agent",
 		},
 	}
 }
@@ -316,7 +316,7 @@ func buildBinary(cfg *buildConfig, platform string) Binary {
 		}
 	}
 
-	filename := fmt.Sprintf("devpod-provider-%s-%s-%s", providerName, os, arch)
+	filename := fmt.Sprintf("devsy-provider-%s-%s-%s", providerName, os, arch)
 	if os == "windows" {
 		filename += ".exe"
 	}

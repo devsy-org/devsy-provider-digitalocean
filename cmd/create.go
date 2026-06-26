@@ -64,38 +64,38 @@ func GetInjectKeypairScript(machineFolder, machineID string) (string, error) {
 	resultScript := `#!/bin/sh
 
 # Mount volume to home
-mkdir -p /home/devpod
-mount -o discard,defaults,noatime /dev/disk/by-id/scsi-0DO_Volume_` + machineID + ` /home/devpod
+mkdir -p /home/devsy
+mount -o discard,defaults,noatime /dev/disk/by-id/scsi-0DO_Volume_` + machineID + ` /home/devsy
 
 # Move docker data dir
 service docker stop
 cat > /etc/docker/daemon.json << EOF
 {
-  "data-root": "/home/devpod/.docker-daemon",
+  "data-root": "/home/devsy/.docker-daemon",
   "live-restore": true
 }
 EOF
 # Make sure we only copy if volumes isn't initialized
-if [ ! -d "/home/devpod/.docker-daemon" ]; then
-  mkdir -p /home/devpod/.docker-daemon
-  rsync -aP /var/lib/docker/ /home/devpod/.docker-daemon
+if [ ! -d "/home/devsy/.docker-daemon" ]; then
+  mkdir -p /home/devsy/.docker-daemon
+  rsync -aP /var/lib/docker/ /home/devsy/.docker-daemon
 fi
 service docker start
 
-# Create DevPod user and configure ssh
-useradd devpod -d /home/devpod
+# Create Devsy user and configure ssh
+useradd devsy -d /home/devsy
 if grep -q sudo /etc/groups; then
-	usermod -aG sudo devpod
+	usermod -aG sudo devsy
 elif grep -q wheel /etc/groups; then
-	usermod -aG wheel devpod
+	usermod -aG wheel devsy
 fi
-echo "devpod ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/91-devpod
-mkdir -p /home/devpod/.ssh
-echo '` + string(publicKey) + `' > /home/devpod/.ssh/authorized_keys
-chmod 0700 /home/devpod/.ssh
-chmod 0600 /home/devpod/.ssh/authorized_keys
-chown devpod:devpod /home/devpod
-chown -R devpod:devpod /home/devpod/.ssh
+echo "devsy ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/91-devsy
+mkdir -p /home/devsy/.ssh
+echo '` + string(publicKey) + `' > /home/devsy/.ssh/authorized_keys
+chmod 0700 /home/devsy/.ssh
+chmod 0600 /home/devsy/.ssh/authorized_keys
+chown devsy:devsy /home/devsy
+chown -R devsy:devsy /home/devsy/.ssh
 
 # Make sure we don't get limited
 ufw allow 22/tcp || true
@@ -120,7 +120,7 @@ func buildInstance(options *options.Options) (*godo.DropletCreateRequest, error)
 			Slug: options.DiskImage,
 		},
 		UserData: userData,
-		Tags:     []string{"devpod"},
+		Tags:     []string{"devsy"},
 	}
 
 	return instance, nil
