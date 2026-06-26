@@ -44,8 +44,8 @@ func (d *DigitalOcean) Create(
 			Name:            req.Name,
 			SizeGigaBytes:   int64(diskSize),
 			FilesystemType:  "ext4",
-			FilesystemLabel: "DevPod Data",
-			Tags:            []string{"devpod"},
+			FilesystemLabel: "Devsy Data",
+			Tags:            []string{"devsy"},
 		})
 		if err != nil {
 			return fmt.Errorf("create volume: %w", err)

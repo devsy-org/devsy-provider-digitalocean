@@ -62,7 +62,7 @@ func (cmd *CommandCmd) Run(ctx context.Context, options *options.Options) error 
 	}
 
 	// dial external address
-	sshClient, err := ssh.NewSSHClient("devpod", externalIP+":22", privateKey)
+	sshClient, err := ssh.NewSSHClient("devsy", externalIP+":22", privateKey)
 	if err != nil {
 		return fmt.Errorf("create ssh client: %w", err)
 	}

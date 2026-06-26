@@ -25,8 +25,8 @@ func FromEnv(skipMachine bool) (*Options, error) {
 		if err != nil {
 			return nil, err
 		}
-		// prefix with devpod-
-		retOptions.MachineID = "devpod-" + retOptions.MachineID
+		// prefix with devsy-
+		retOptions.MachineID = "devsy-" + retOptions.MachineID
 
 		retOptions.MachineFolder, err = fromEnvOrError("MACHINE_FOLDER")
 		if err != nil {
