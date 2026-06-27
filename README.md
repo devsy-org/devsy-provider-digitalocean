@@ -23,7 +23,7 @@ from the environment, or you can supply `TOKEN` directly via provider options.
 After the initial setup, just use:
 
 ```sh
-devsy up .
+devsy workspace up .
 ```
 
 You'll need to wait for the machine and environment setup.
