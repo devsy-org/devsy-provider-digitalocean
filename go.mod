@@ -4,7 +4,7 @@ go 1.25.8
 
 require (
 	github.com/devsy-org/devsy v1.0.0
-	github.com/digitalocean/godo v1.98.0
+	github.com/digitalocean/godo v1.197.0
 	github.com/goccy/go-yaml v1.19.2
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/crypto v0.50.0
@@ -95,6 +95,8 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.1.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.7 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
