@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/devsy-org/devsy v1.4.1
-	github.com/digitalocean/godo v1.197.0
+	github.com/digitalocean/godo v1.198.0
 	github.com/goccy/go-yaml v1.19.2
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/crypto v0.53.0
