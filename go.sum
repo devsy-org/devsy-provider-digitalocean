@@ -98,8 +98,8 @@ github.com/devsy-org/apiserver v1.5.3 h1:tFKMgPxxfvojJ+C+wo0oqSmbE9PTJ2ur1E2yFj0
 github.com/devsy-org/apiserver v1.5.3/go.mod h1:m7gpbrh++Hp8iEM5jaP7vjjODPbs9Bmh3l4+iPFg1jE=
 github.com/devsy-org/devsy v1.6.1 h1:NQ9lHHca5Z/Ux3P2f+CssNfL+FBwDgZMb72/U+jBNEQ=
 github.com/devsy-org/devsy v1.6.1/go.mod h1:tsOXWXSpEFCdVAgQtkR4XXozpntGqz50M/zN0mbU5S8=
-github.com/digitalocean/godo v1.199.0 h1:brSUWakhtutyzNTvRGSvn+lXC7MTg8VA9DGoA6miWXA=
-github.com/digitalocean/godo v1.199.0/go.mod h1:xQsWpVCCbkDrWisHA72hPzPlnC+4W5w/McZY5ij9uvU=
+github.com/digitalocean/godo v1.200.0 h1:2+f5OH8+sjie20XwCYm6tveJBH7Xo5YZ2pnvfO2lDgk=
+github.com/digitalocean/godo v1.200.0/go.mod h1:xQsWpVCCbkDrWisHA72hPzPlnC+4W5w/McZY5ij9uvU=
 github.com/docker/cli v29.6.2+incompatible h1:/bjePvcbbFTnRrMfWJBY7AjfICdsiLVgHn6LwTVOcqw=
 github.com/docker/cli v29.6.2+incompatible/go.mod h1:JLrzqnKDaYBop7H2jaqPtU4hHvMKP+vjCwu2uszcLI8=
 github.com/docker/docker v28.5.2+incompatible h1:DBX0Y0zAjZbSrm1uzOkdr1onVghKaftjlSWt4AFexzM=
