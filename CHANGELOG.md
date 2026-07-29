@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.16](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.1.15...v1.1.16) (2026-07-29)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/devsy-org/devsy to v1.11.1 ([#64](https://github.com/devsy-org/devsy-provider-digitalocean/issues/64)) ([e24a7b9](https://github.com/devsy-org/devsy-provider-digitalocean/commit/e24a7b9033086ec8e159b81d84e768109bd48807))
+
 ## [1.1.15](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.1.14...v1.1.15) (2026-07-28)
 
 
