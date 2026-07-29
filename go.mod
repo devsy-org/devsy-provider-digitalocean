@@ -3,7 +3,7 @@ module github.com/devsy-org/devsy-provider-digitalocean
 go 1.26.0
 
 require (
-	github.com/devsy-org/devsy v1.11.1
+	github.com/devsy-org/devsy v1.11.2
 	github.com/digitalocean/godo v1.201.0
 	github.com/goccy/go-yaml v1.19.2
 	github.com/spf13/cobra v1.10.2
