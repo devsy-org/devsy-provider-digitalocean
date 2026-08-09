@@ -3,7 +3,7 @@ module github.com/devsy-org/devsy-provider-digitalocean
 go 1.26.3
 
 require (
-	github.com/devsy-org/devsy v1.14.1
+	github.com/devsy-org/devsy v1.15.0
 	github.com/digitalocean/godo v1.203.0
 	github.com/goccy/go-yaml v1.19.2
 	github.com/spf13/cobra v1.10.2
@@ -103,7 +103,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/moby/buildkit v0.32.1 // indirect
+	github.com/moby/buildkit v0.32.2 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/patternmatcher v0.6.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
