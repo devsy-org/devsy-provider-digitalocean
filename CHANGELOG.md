@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.26](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.1.25...v1.1.26) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** update module golang.org/x/crypto to v0.55.0 ([#88](https://github.com/devsy-org/devsy-provider-digitalocean/issues/88)) ([b627487](https://github.com/devsy-org/devsy-provider-digitalocean/commit/b627487254ee1fe6d4d5cce546092da574359558))
+
 ## [1.1.25](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.1.24...v1.1.25) (2026-08-10)
 
 
