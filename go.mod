@@ -1,6 +1,6 @@
 module github.com/devsy-org/devsy-provider-digitalocean
 
-go 1.26.3
+go 1.26.10
 
 require (
 	github.com/devsy-org/devsy v1.15.0
