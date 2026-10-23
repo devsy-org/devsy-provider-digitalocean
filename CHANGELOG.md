@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.28](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.1.27...v1.1.28) (2026-10-23)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/digitalocean/godo to v1.232.0 ([#112](https://github.com/devsy-org/devsy-provider-digitalocean/issues/112)) ([5f648ad](https://github.com/devsy-org/devsy-provider-digitalocean/commit/5f648ad2c549206e9af578bf237a9b1e5e3cd42a))
+
 ## [1.1.27](https://github.com/devsy-org/devsy-provider-digitalocean/compare/v1.1.26...v1.1.27) (2026-10-23)
 
 
