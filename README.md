@@ -46,6 +46,12 @@ Options can either be set in `env` or on the command line, for example:
 devsy provider set-options -o MACHINE_TYPE=s-8vcpu-16gb
 ```
 
+## Logging
+
+The provider writes diagnostics to stderr as JSON by default. Set `DEVSY_LOG_LEVEL` to `error`, `warn`, `info`, `debug`, or `trace`. The standalone default is `info`. Devsy supplies its effective level when it starts the provider.
+
+Set `DEVSY_LOG_FORMAT` to `json`, `text`, `plain`, or `logfmt` to select the output format. The default and `auto` use JSON. Command data and remote command streams remain on their established streams.
+
 ## Local Development
 
 To build and test the provider locally, use [task](https://taskfile.dev/)
