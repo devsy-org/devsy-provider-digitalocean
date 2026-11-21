@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 
+	"github.com/devsy-org/devsy/logging"
 	"github.com/devsy-org/devsy/pkg/log"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"
@@ -17,18 +19,36 @@ func NewRootCmd() *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 
-		PersistentPreRunE: func(cobraCmd *cobra.Command, args []string) error {
-			cfg := log.Config{Verbosity: 1}
-			if os.Getenv("DEVSY_DEBUG") == "true" {
-				cfg.Debug = true
-			}
-			log.Init(cfg)
-
-			return nil
+		PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
+			return initProviderLogging()
 		},
 	}
 
 	return doCmd
+}
+
+func initProviderLogging() error {
+	log.Init(log.Config{DefaultLevel: log.LevelInfoName, Format: "json"})
+
+	cfg, invalid := logging.ResolveProvider(
+		os.Getenv("DEVSY_LOG_LEVEL"),
+		os.Getenv("DEVSY_LOG_FORMAT"),
+	)
+	if invalid.Level {
+		return fmt.Errorf("invalid DEVSY_LOG_LEVEL")
+	}
+	if invalid.Format {
+		return fmt.Errorf("invalid DEVSY_LOG_FORMAT")
+	}
+
+	log.Init(
+		log.Config{
+			Level:        logging.LevelName(cfg.Level),
+			DefaultLevel: log.LevelInfoName,
+			Format:       string(cfg.Format),
+		},
+	)
+	return nil
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
